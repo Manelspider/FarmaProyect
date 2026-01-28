@@ -1,5 +1,6 @@
-FarmaNexo
-Descripción del Proyecto
+**FarmaNexo
+
+**Descripción del Proyecto
 
 FarmaNexo es un sistema de intercomunicación entre médicos y proveedores de fármacos que permite gestionar y dar seguimiento a las recetas médicas de los pacientes. La plataforma busca optimizar el flujo de información entre los actores del sistema de salud, garantizando que los proveedores estén informados sobre el estado de las recetas y que los médicos puedan monitorear su evolución de manera eficiente.
 
