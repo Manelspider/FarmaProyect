@@ -1,0 +1,12 @@
+[submodule "farmanexo-api"]
+	path = farmanexo-api
+	url = https://github.com/Manelspider/farmanexo-api
+[submodule "farmanexo-panel"]
+	path = farmanexo-panel
+	url = https://github.com/Manelspider/farmanexo-panel
+[submodule "farmanexo-devops"]
+	path = farmanexo-devops
+	url = https://github.com/Manelspider/farmanexo-devops.git
+[submodule "farmanexo-app"]
+	path = farmanexo-app
+	url = https://github.com/Manelspider/farmanexo-app
