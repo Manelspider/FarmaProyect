@@ -31,8 +31,11 @@ services:
     build: ./farmanexo-api
     env_file:
       - ./farmanexo-api/.env
+    volumes:
+      - ./farmanexo-api:/app
     networks:
       - farmanexo_net
+    command: python manage.py runserver 0.0.0.0:18000
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.api.rule=Host(`farmanexo.zapto.org`) && PathPrefix(`/api`)"
@@ -47,6 +50,10 @@ services:
   panel:
     build: ./farmanexo-panel
     container_name: farmanexo_panel
+    volumes:
+      - ./farmanexo-panel/public:/var/www/html
+      - ./farmanexo-panel/shared:/var/www/shared
+      - ./farmanexo-panel/config:/var/www/config
     networks:
       - farmanexo_net
     labels:
@@ -61,6 +68,9 @@ services:
 
   app:
     build: ./farmanexo-app
+    volumes:
+      - ./farmanexo-app:/app
+      - /app/node_modules
     networks:
       - farmanexo_net
     labels:
