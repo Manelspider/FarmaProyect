@@ -1,34 +1,126 @@
-# FarmaNexo
+# FarmaNexo - Sistema de Gestión Farmacéutica
 
-## Descripción del Proyecto
+Sistema de intercomunicación entre médicos y proveedores de fármacos que permite gestionar y dar seguimiento a las recetas médicas de los pacientes.
 
-FarmaNexo es un sistema de intercomunicación entre médicos y proveedores de fármacos que permite gestionar y dar seguimiento a las recetas médicas de los pacientes. La plataforma optimiza el flujo de información entre los actores del sistema de salud, garantizando que los proveedores estén informados sobre el estado de las recetas y que los médicos puedan monitorear su evolución de manera eficiente.
+## 📋 Descripción
 
-El proyecto se plantea como una solución modular que puede abarcar:  
+FarmaNexo optimiza el flujo de información, gestion y envio de flujo de notificaciones entre las recetas de los pacientes :
 
-- **Panel web** para gestión de recetas y usuarios.
-- **API REST** para la integración con otros sistemas o aplicaciones móviles.
-- **Aplicación móvil (opcional)** para mejorar la accesibilidad y comunicación en tiempo real entre médicos y proveedores.
+- Facilitar la comunicación entre médicos y proveedores
+- Visualizar el estado de las recetas en tiempo real
+- Garantizar trazabilidad de la información médica
+- Escalar fácilmente para futuras integraciones
 
-## Objetivos
+## 🏗️ Componentes Principales
 
-- Facilitar la comunicación entre médicos y proveedores de fármacos.
-- Proporcionar visibilidad del estado de las recetas de los pacientes.
-- Garantizar trazabilidad y control de la información médica relevante.
-- Permitir escalabilidad para futuras integraciones con aplicaciones móviles o sistemas externos.
+- **API REST** - Django + PostgreSQL
+- **Panel de Administración** - PHP + Apache
+- **Aplicación Web** - React + Vite
+- **Reverse Proxy** - Traefik con SSL automático
 
-## Características Principales
+## 🚀 Inicio Rápido
 
-- Registro y gestión de usuarios (médicos y proveedores).
-- Administración y seguimiento de recetas médicas.
-- Estado actualizado de cada receta (pendiente, aprobada, despachada, etc.).
-- API para consultas externas y posibles integraciones con otros sistemas de salud.
-- Seguridad y privacidad de los datos conforme a buenas prácticas.
-- 
-## Tecnologías Previstas
+### Requisitos
 
-- **Backend:** PHP (Laravel), Node.js o similar
-- **Frontend:** Vue.js, Angular o React
-- **Base de datos:** MySQL, PostgreSQL o similar
-- **API:** RESTful con autenticación segura
-- **Aplicación móvil (opcional):** Ionic / React Native
+- Docker & Docker Compose
+- Git
+
+### Instalación
+
+1. **Clonar el repositorio**
+   ```bash
+   git clone <repository-url>
+   cd FarmaNexo
+   ```
+
+2. **Configurar variables de entorno**
+   ```bash
+   cp backend/.env.example backend/.env
+   cp backend/.db.env.example backend/.db.env
+   ```
+
+   Editar los archivos y cambiar:
+   - `DJANGO_SECRET_KEY` → Generar clave única
+   - `POSTGRES_PASSWORD` → Contraseña segura
+   - `DJANGO_ALLOWED_HOSTS` → Tu dominio
+
+3. **Crear infraestructura de Docker**
+   ```bash
+   docker network create main_net
+   mkdir -p certs proxy
+   touch certs/acme.json proxy/acme.json
+   chmod 600 certs/acme.json proxy/acme.json
+   ```
+
+4. **Actualizar configuración**
+   - En `docker-compose.yml`: cambiar dominio
+   - En `proxy/config.yml`: cambiar email para Let's Encrypt
+
+5. **Iniciar servicios**
+   ```bash
+   docker compose up -d --build
+   ```
+
+6. **Configurar base de datos**
+   ```bash
+   docker compose exec backend python manage.py migrate
+   docker compose exec backend python manage.py createsuperuser
+   ```
+
+## 🌐 Acceso
+
+- **API**: `https://tu-dominio.com/api/`
+- **Panel**: `https://tu-dominio.com/panel/`
+- **App Web**: `https://tu-dominio.com/app/`
+
+## 📁 Estructura
+
+```
+project/
+├── backend/            # API REST
+├── frontend/           # Aplicación Web
+├── admin/              # Panel Admin
+├── proxy/              # Reverse Proxy Config
+├── docker-compose.yml  # Orquestación
+└── README.md           # Este archivo
+```
+
+## 🛠️ Comandos Útiles
+
+### General
+```bash
+# Ver logs
+docker compose logs -f
+
+# Ver logs de un servicio
+docker compose logs -f backend
+
+# Detener servicios
+docker compose down
+```
+
+### Backend
+```bash
+# Ejecutar migraciones
+docker compose exec backend python manage.py migrate
+
+# Crear superusuario
+docker compose exec backend python manage.py createsuperuser
+```
+
+### Base de Datos
+```bash
+# Backup
+docker compose exec db pg_dump -U app app > backup.sql
+
+# Restaurar
+docker compose exec -T db psql -U app app < backup.sql
+```
+
+## 📦 Tecnologías
+
+- Backend: Django 5.1 + DRF
+- Frontend: React 19 + Vite 7
+- Base de Datos: PostgreSQL 16
+- Proxy: Traefik v3.6
+- Orquestación: Docker Compose

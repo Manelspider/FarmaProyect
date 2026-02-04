@@ -1,0 +1,78 @@
+# Archivos de configuración local y secretos
+.env
+.env.local
+.env.*.local
+*.env
+
+# Docker y volúmenes
+docker-compose.override.yml
+letsencrypt/
+traefik/
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Certificados SSL
+*.pem
+*.crt
+*.key
+
+# Cache y archivos temporales
+.cache/
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Node modules (si usas Node.js en algún subproyecto)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDEs y editores
+.vscode/
+.vscode-server/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Archivos de usuario de bash/shell
+.bash_history
+.bash_logout
+.bashrc
+.profile
+.wget-hsts
+.ssh/
+
+# Base de datos local
+*.sqlite
+*.sqlite3
+*.db
+
+# Backups
+*.bak
+*.backup
+
+# Archivos de sistema
+Thumbs.db
+.directory
+
+# Archivos específicos de Django
+staticfiles/
+media/
+db.sqlite3
+
+# Archivos específicos de PHP
+vendor/
+composer.lock

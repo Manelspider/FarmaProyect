@@ -1,0 +1,86 @@
+# FarmaNexo - Docker Compose Configuration
+# 
+# IMPORTANTE: Antes de usar en producción:
+# 1. Cambiar el dominio 'farmanexo.zapto.org' por tu dominio real
+# 2. Configurar archivos .env (ver README.md)
+# 3. Actualizar email en traefik/traefik.yml para Let's Encrypt
+# 4. Establecer contraseñas seguras en .db.env
+#
+version: "3.9"
+
+networks:
+  farmanexo_net:
+    external: true
+
+volumes:
+  postgres_data:
+
+services:
+  db:
+    image: postgres:16
+    env_file:
+      - ./farmanexo-api/.db.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "15432:5432"
+    networks:
+      - farmanexo_net
+
+  api:
+    build: ./farmanexo-api
+    env_file:
+      - ./farmanexo-api/.env
+    networks:
+      - farmanexo_net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`farmanexo.zapto.org`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.api.entrypoints=websecure"
+      - "traefik.http.routers.api.tls=true"
+      - "traefik.http.routers.api.tls.certresolver=myresolver"
+      # ELIMINADAS las líneas de stripprefix:
+      # - "traefik.http.middlewares.api-strip.stripprefix.prefixes=/api"
+      # - "traefik.http.routers.api.middlewares=api-strip"
+      - "traefik.http.services.api.loadbalancer.server.port=18000"
+
+  panel:
+    build: ./farmanexo-panel
+    container_name: farmanexo_panel
+    networks:
+      - farmanexo_net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.panel.rule=Host(`farmanexo.zapto.org`) && PathPrefix(`/panel`)"
+      - "traefik.http.routers.panel.entrypoints=websecure"
+      - "traefik.http.routers.panel.tls=true"
+      - "traefik.http.routers.panel.tls.certresolver=myresolver"
+      - "traefik.http.middlewares.panel-strip.stripprefix.prefixes=/panel"
+      - "traefik.http.routers.panel.middlewares=panel-strip"
+      - "traefik.http.services.panel.loadbalancer.server.port=80"
+
+  app:
+    build: ./farmanexo-app
+    networks:
+      - farmanexo_net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app.rule=Host(`farmanexo.zapto.org`) && PathPrefix(`/app`)"
+      - "traefik.http.routers.app.entrypoints=websecure"
+      - "traefik.http.routers.app.tls=true"
+      - "traefik.http.routers.app.tls.certresolver=myresolver"
+      - "traefik.http.services.app.loadbalancer.server.port=5173"
+
+  traefik:
+    image: traefik:v3.6
+    container_name: traefik
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./letsencrypt:/letsencrypt
+    networks:
+      - farmanexo_net
