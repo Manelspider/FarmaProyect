@@ -1,10 +1,10 @@
-# FarmaNexo - Sistema de Gestión Farmacéutica
+# FarmaProyect - Sistema de Gestión Farmacéutica
 
 Sistema de intercomunicación entre médicos y proveedores de fármacos que permite gestionar y dar seguimiento a las recetas médicas de los pacientes.
 
 ## 📋 Descripción
 
-FarmaNexo optimiza el flujo de información, gestion y envio de flujo de notificaciones entre las recetas de los pacientes :
+FarmaProyect optimiza el flujo de información, gestion y envio de flujo de notificaciones entre las recetas de los pacientes :
 
 - Facilitar la comunicación entre médicos y proveedores
 - Visualizar el estado de las recetas en tiempo real
@@ -30,7 +30,7 @@ FarmaNexo optimiza el flujo de información, gestion y envio de flujo de notific
 1. **Clonar el repositorio**
    ```bash
    git clone <repository-url>
-   cd FarmaNexo
+   cd FarmaProyect
    ```
 
 2. **Configurar variables de entorno**
