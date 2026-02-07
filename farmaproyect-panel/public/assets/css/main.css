@@ -1,0 +1,105 @@
+/**
+ * FarmaProject - Estilos Principales
+ * Custom styles for the application
+ */
+
+:root {
+    --fp-primary: #667eea;
+    --fp-primary-rgb: 102, 126, 234;
+    --fp-secondary: #764ba2;
+    --fp-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Override Tabler/Bootstrap primary color */
+.btn-primary {
+    background: var(--fp-gradient);
+    border: none;
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    transition: all 0.2s ease;
+}
+
+/* Brand logo styles */
+.brand-logo {
+    width: 60px;
+    height: 60px;
+    background: var(--fp-gradient);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+}
+
+/* Avatar circle */
+.avatar-circle {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto;
+    background: var(--fp-gradient);
+    border: 5px solid #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Login page specific */
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    background: #f6f8fb;
+}
+
+.login-card {
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid #e9ecef;
+    border-radius: 16px;
+}
+
+.login-hero {
+    background: var(--fp-gradient);
+    border-radius: 16px;
+    color: #fff;
+    padding: 2rem;
+}
+
+/* Profile hero */
+.profile-hero {
+    background: var(--fp-gradient);
+    border-radius: 16px;
+    color: #fff;
+}
+
+/* Smooth transitions */
+.card,
+.btn,
+.dropdown-menu {
+    transition: all 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--fp-primary);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--fp-secondary);
+}

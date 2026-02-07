@@ -1,7 +1,7 @@
 # FarmaProyect - Docker Compose Configuration
 # 
 # IMPORTANTE: Antes de usar en producción:
-# 1. Cambiar el dominio 'farmaproyect.zapto.org' por tu dominio real
+# 1. Cambiar el dominio 'farmaproject.zapto.org' por tu dominio real
 # 2. Configurar archivos .env (ver README.md)
 # 3. Actualizar email en traefik/traefik.yml para Let's Encrypt
 # 4. Establecer contraseñas seguras en .db.env
@@ -38,13 +38,11 @@ services:
     command: python manage.py runserver 0.0.0.0:18000
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.api.rule=Host(`farmaproyect.zapto.org`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.api.rule=Host(`farmaproject.zapto.org`) && PathPrefix(`/api`)"
       - "traefik.http.routers.api.entrypoints=websecure"
       - "traefik.http.routers.api.tls=true"
       - "traefik.http.routers.api.tls.certresolver=myresolver"
-      # ELIMINADAS las líneas de stripprefix:
-      # - "traefik.http.middlewares.api-strip.stripprefix.prefixes=/api"
-      # - "traefik.http.routers.api.middlewares=api-strip"
+      - "traefik.http.routers.api.middlewares=api-headers"
       - "traefik.http.services.api.loadbalancer.server.port=18000"
 
   panel:
@@ -58,7 +56,7 @@ services:
       - farmaproyect_net
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.panel.rule=Host(`farmaproyect.zapto.org`) && PathPrefix(`/panel`)"
+      - "traefik.http.routers.panel.rule=Host(`farmaproject.zapto.org`) && PathPrefix(`/panel`)"
       - "traefik.http.routers.panel.entrypoints=websecure"
       - "traefik.http.routers.panel.tls=true"
       - "traefik.http.routers.panel.tls.certresolver=myresolver"
@@ -75,7 +73,7 @@ services:
       - farmaproyect_net
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.app.rule=Host(`farmaproyect.zapto.org`) && PathPrefix(`/app`)"
+      - "traefik.http.routers.app.rule=Host(`farmaproject.zapto.org`) && PathPrefix(`/app`)"
       - "traefik.http.routers.app.entrypoints=websecure"
       - "traefik.http.routers.app.tls=true"
       - "traefik.http.routers.app.tls.certresolver=myresolver"
