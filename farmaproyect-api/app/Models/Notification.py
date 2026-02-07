@@ -61,7 +61,7 @@ class Notification(models.Model):
     
     # Campos de la notificación
     message = models.TextField(help_text="Mensaje inicial de la notificación")
-    attachment = models.CharField(max_length=255, blank=True, null=True, help_text="Ruta de imagen adjunta")
+    image_base64 = models.TextField(blank=True, null=True, help_text="Imagen adjunta en base64")
     
     status = models.ForeignKey(
         CommonStatus,

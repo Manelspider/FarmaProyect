@@ -1,411 +1,233 @@
 <?php
-/**
- * Dashboard Principal - FarmaProject
- * Usando Tabler Design System
- */
 require_once 'auth.php';
+require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/assets.php';
-
 requireAuth();
 
+$pageTitle = 'Dashboard';
 $user = $_SESSION['user'];
 $userData = $user['data'] ?? [];
 $userName = trim(($userData['first_name'] ?? '') . ' ' . ($userData['last_name'] ?? '')) ?: 'Usuario';
-$userEmail = $user['email'] ?? '';
-$userRole = $user['role_name'] ?? 'Usuario';
+$userRole = $user['role_name'] ?? '';
+$token = $_SESSION['access_token'] ?? '';
 
-// Iniciales para avatar
-$initials = strtoupper(substr($userData['first_name'] ?? 'U', 0, 1) . substr($userData['last_name'] ?? 'S', 0, 1));
+$isAdmin = $userRole === 'Administrador';
+$isDoctor = $userRole === 'Médico';
+$isFarmaceutico = $userRole === 'Farmacéutico';
+$canViewAllPharmacies = $isAdmin || $isDoctor;
+$canViewUsers = $isAdmin;
+
+// Get selected pharmacy from session
+$selectedPharmacy = $_SESSION['selected_pharmacy'] ?? null;
+$selectedPharmacyId = $selectedPharmacy['id'] ?? null;
+$selectedPharmacyName = $selectedPharmacy['name'] ?? null;
+$isFiltered = $selectedPharmacyId !== null;
 ?>
-<!doctype html>
-<html lang="es">
-<head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
-    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
-    <title>Dashboard - FarmaProject</title>
-    
-    <!-- Global Assets (CDN) -->
-    <?= AssetsManager::renderCSS() ?>
-    
-    <!-- Page Specific CSS -->
-    <link href="<?= AssetsManager::asset('css/index_page.css') ?>" rel="stylesheet"/>
-</head>
-<body>
-    <div class="page">
-        <!-- Sidebar -->
-        <aside class="navbar navbar-vertical navbar-expand-lg" data-bs-theme="dark">
-            <div class="container-fluid">
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar-menu" aria-controls="sidebar-menu" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                
-                <h1 class="navbar-brand navbar-brand-autodark">
-                    <a href="index.php">
-                        <i class="ti ti-pill icon text-white" style="font-size: 32px;"></i>
-                        <span class="ms-2">FarmaProject</span>
-                    </a>
-                </h1>
-                
-                <div class="collapse navbar-collapse" id="sidebar-menu">
-                    <ul class="navbar-nav pt-lg-3">
-                        <li class="nav-item active">
-                            <a class="nav-link" href="index.php">
-                                <span class="nav-link-icon d-md-none d-lg-inline-block">
-                                    <i class="ti ti-home icon"></i>
-                                </span>
-                                <span class="nav-link-title">Dashboard</span>
-                            </a>
-                        </li>
-                        
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <span class="nav-link-icon d-md-none d-lg-inline-block">
-                                    <i class="ti ti-building-store icon"></i>
-                                </span>
-                                <span class="nav-link-title">Farmacias</span>
-                            </a>
-                        </li>
-                        
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <span class="nav-link-icon d-md-none d-lg-inline-block">
-                                    <i class="ti ti-users icon"></i>
-                                </span>
-                                <span class="nav-link-title">Usuarios</span>
-                            </a>
-                        </li>
-                        
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <span class="nav-link-icon d-md-none d-lg-inline-block">
-                                    <i class="ti ti-bell icon"></i>
-                                </span>
-                                <span class="nav-link-title">Notificaciones</span>
-                            </a>
-                        </li>
-                        
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#navbar-extra" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false">
-                                <span class="nav-link-icon d-md-none d-lg-inline-block">
-                                    <i class="ti ti-settings icon"></i>
-                                </span>
-                                <span class="nav-link-title">Configuración</span>
-                            </a>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="#">
-                                    <i class="ti ti-adjustments icon me-2"></i>
-                                    Preferencias
-                                </a>
-                                <a class="dropdown-item" href="#">
-                                    <i class="ti ti-shield-lock icon me-2"></i>
-                                    Seguridad
-                                </a>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </aside>
-        
-        <!-- Header -->
-        <header class="navbar navbar-expand-md d-print-none">
-            <div class="container-xl">
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                
-                <div class="navbar-nav flex-row order-md-last">
-                    <!-- Notificaciones -->
-                    <div class="nav-item dropdown d-none d-md-flex me-3">
-                        <a href="#" class="nav-link px-0" data-bs-toggle="dropdown" tabindex="-1" aria-label="Show notifications">
-                            <i class="ti ti-bell icon"></i>
-                            <span class="badge bg-red"></span>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-arrow dropdown-menu-end dropdown-menu-card">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h3 class="card-title">Últimas notificaciones</h3>
-                                </div>
-                                <div class="list-group list-group-flush list-group-hoverable">
-                                    <div class="list-group-item">
-                                        <div class="text-truncate">
-                                            <small class="text-muted">No hay notificaciones nuevas</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Menú de Usuario -->
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown" aria-label="Open user menu">
-                            <span class="avatar avatar-sm" style="background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjNjY3ZWVhIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiNmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj4="><?= $initials ?></text></svg>)"></span>
-                            <div class="d-none d-xl-block ps-2">
-                                <div><?= htmlspecialchars($userName) ?></div>
-                                <div class="mt-1 small text-muted"><?= htmlspecialchars($userRole) ?></div>
-                            </div>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                            <a href="profile.php" class="dropdown-item">
-                                <i class="ti ti-user icon me-2"></i>
-                                Mi Perfil
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a href="logout.php" class="dropdown-item text-danger">
-                                <i class="ti ti-logout icon me-2"></i>
-                                Cerrar Sesión
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </header>
-        
-        <!-- Contenido Principal -->
-        <div class="page-wrapper">
-            <!-- Page header -->
-            <div class="page-header d-print-none">
-                <div class="container-xl">
-                    <div class="row g-2 align-items-center">
-                        <div class="col">
-                            <h2 class="page-title">
-                                Dashboard
-                            </h2>
-                            <div class="text-muted mt-1">Bienvenido de nuevo, <?= htmlspecialchars($userName) ?></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Page body -->
-            <div class="page-body">
-                <div class="container-xl">
-                    <!-- Tarjetas de Estadísticas -->
-                    <div class="row row-deck row-cards">
-                        <div class="col-sm-6 col-lg-3">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="d-flex align-items-center">
-                                        <div class="subheader">Farmacias</div>
-                                        <div class="ms-auto lh-1">
-                                            <div class="dropdown">
-                                                <a class="dropdown-toggle text-muted" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Últimos 7 días</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="h1 mb-3">12</div>
-                                    <div class="d-flex mb-2">
-                                        <div>Total de farmacias registradas</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-sm-6 col-lg-3">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="d-flex align-items-center">
-                                        <div class="subheader">Usuarios</div>
-                                    </div>
-                                    <div class="h1 mb-3">45</div>
-                                    <div class="d-flex mb-2">
-                                        <div>Usuarios activos en el sistema</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-sm-6 col-lg-3">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="d-flex align-items-center">
-                                        <div class="subheader">Notificaciones</div>
-                                    </div>
-                                    <div class="h1 mb-3">8</div>
-                                    <div class="d-flex mb-2">
-                                        <div>Notificaciones pendientes</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-sm-6 col-lg-3">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="d-flex align-items-center">
-                                        <div class="subheader">Conexiones</div>
-                                    </div>
-                                    <div class="h1 mb-3">23</div>
-                                    <div class="d-flex mb-2">
-                                        <div>Usuarios conectados ahora</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Actividad Reciente -->
-                    <div class="row row-cards mt-4">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h3 class="card-title">Actividad Reciente</h3>
-                                </div>
-                                <div class="card-body">
-                                    <div class="divide-y">
-                                        <div>
-                                            <div class="row">
-                                                <div class="col-auto">
-                                                    <span class="avatar">
-                                                        <i class="ti ti-user-plus icon"></i>
-                                                    </span>
-                                                </div>
-                                                <div class="col">
-                                                    <div class="text-truncate">
-                                                        <strong>Nuevo usuario registrado</strong>
-                                                    </div>
-                                                    <div class="text-muted">Juan Pérez se ha registrado en el sistema</div>
-                                                </div>
-                                                <div class="col-auto align-self-center">
-                                                    <div class="badge bg-primary"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div>
-                                            <div class="row">
-                                                <div class="col-auto">
-                                                    <span class="avatar">
-                                                        <i class="ti ti-building-store icon"></i>
-                                                    </span>
-                                                </div>
-                                                <div class="col">
-                                                    <div class="text-truncate">
-                                                        <strong>Nueva farmacia agregada</strong>
-                                                    </div>
-                                                    <div class="text-muted">Farmacia San Juan fue agregada al sistema</div>
-                                                </div>
-                                                <div class="col-auto align-self-center">
-                                                    <div class="badge bg-primary"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div>
-                                            <div class="row">
-                                                <div class="col-auto">
-                                                    <span class="avatar">
-                                                        <i class="ti ti-bell icon"></i>
-                                                    </span>
-                                                </div>
-                                                <div class="col">
-                                                    <div class="text-truncate">
-                                                        <strong>Notificación enviada</strong>
-                                                    </div>
-                                                    <div class="text-muted">Se envió notificación a 15 usuarios</div>
-                                                </div>
-                                                <div class="col-auto align-self-center">
-                                                    <div class="badge bg-primary"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Información del Sistema -->
-                    <div class="row row-cards mt-4">
-                        <div class="col-lg-6">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h3 class="card-title">Información del Sistema</h3>
-                                </div>
-                                <div class="card-body">
-                                    <dl class="row">
-                                        <dt class="col-5">Versión:</dt>
-                                        <dd class="col-7">FarmaProject v1.0.0</dd>
-                                        
-                                        <dt class="col-5">Estado:</dt>
-                                        <dd class="col-7"><span class="badge bg-success">Operativo</span></dd>
-                                        
-                                        <dt class="col-5">Última actualización:</dt>
-                                        <dd class="col-7"><?= date('d/m/Y H:i') ?></dd>
-                                        
-                                        <dt class="col-5">Autenticación:</dt>
-                                        <dd class="col-7"><span class="badge bg-info">JWT</span></dd>
-                                    </dl>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-lg-6">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h3 class="card-title">Accesos Rápidos</h3>
-                                </div>
-                                <div class="card-body">
-                                    <div class="list-group list-group-flush">
-                                        <a href="profile.php" class="list-group-item list-group-item-action">
-                                            <div class="row align-items-center">
-                                                <div class="col-auto">
-                                                    <i class="ti ti-user icon"></i>
-                                                </div>
-                                                <div class="col">
-                                                    <strong>Mi Perfil</strong>
-                                                    <div class="text-muted">Ver y editar información personal</div>
-                                                </div>
-                                            </div>
-                                        </a>
-                                        <a href="#" class="list-group-item list-group-item-action">
-                                            <div class="row align-items-center">
-                                                <div class="col-auto">
-                                                    <i class="ti ti-settings icon"></i>
-                                                </div>
-                                                <div class="col">
-                                                    <strong>Configuración</strong>
-                                                    <div class="text-muted">Ajustes del sistema</div>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Footer -->
-            <footer class="footer footer-transparent d-print-none">
-                <div class="container-xl">
-                    <div class="row text-center align-items-center flex-row-reverse">
-                        <div class="col-lg-auto ms-lg-auto">
-                            <ul class="list-inline list-inline-dots mb-0">
-                                <li class="list-inline-item"><a href="#" class="link-secondary">Documentación</a></li>
-                                <li class="list-inline-item"><a href="#" class="link-secondary">Soporte</a></li>
-                            </ul>
-                        </div>
-                        <div class="col-12 col-lg-auto mt-3 mt-lg-0">
-                            <ul class="list-inline list-inline-dots mb-0">
-                                <li class="list-inline-item">
-                                    FarmaProject &copy; <?= date('Y') ?>
-                                </li>
-                                <li class="list-inline-item">
-                                    Versión 1.0.0
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </footer>
-        </div>
-    </div>
-    
-    <!-- Global & App Assets -->
-    <?= AssetsManager::renderJS() ?>
-</body>
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<title>Dashboard - FarmaProject</title>
+		<?= AssetsManager::renderCSS(['bootstrap', 'tabler-icons', 'select2', 'select2-bs5', 'leaflet', 'main']) ?>
+		<link href="<?= AssetsManager::asset('css/index_page.css') ?>" rel="stylesheet"/>
+	</head>
+
+	<body>
+
+		<div class="layout">
+			<?php include __DIR__ . '/../shared/sidebar.php'; ?>
+
+			<!-- Main content -->
+			<div class="main-content">
+				<?php include __DIR__ . '/../shared/header.php'; ?>
+
+				<!-- Page body -->
+				<div class="page-body">
+					<div class="container-fluid">
+
+						<!-- Page header -->
+						<div class="mb-4">
+							<h2 class="mb-1">Bienvenido, <?= htmlspecialchars($userName) ?></h2>
+							<p class="text-muted mb-0">
+								<?php if ($isFiltered && $canViewAllPharmacies): ?>
+									<span class="badge badge-success me-2"><i class="ti ti-filter"></i> <?= htmlspecialchars($selectedPharmacyName) ?></span>
+									Mostrando datos de la farmacia seleccionada
+								<?php elseif ($isFarmaceutico): ?>
+									Panel de gestión de tu farmacia
+								<?php elseif ($isDoctor): ?>
+									Panel de gestión médica
+								<?php else: ?>
+									Resumen general del sistema
+								<?php endif; ?>
+							</p>
+						</div>
+						<!-- /page header -->
+
+						<!-- Stat Cards -->
+						<div class="row g-3 mb-4">
+							<?php if ($canViewAllPharmacies && !$isFiltered): ?>
+							<div class="col-6 col-lg-3">
+								<div class="stat-card">
+									<div class="stat-icon green"><i class="ti ti-building-store"></i></div>
+									<div class="stat-info">
+										<div class="stat-label">Farmacias</div>
+										<div class="stat-value" id="statPharmacies">3</div>
+										<div class="stat-change neutral">Registradas</div>
+									</div>
+								</div>
+							</div>
+							<?php endif; ?>
+							
+							<?php if ($canViewUsers && !$isFiltered): ?>
+							<div class="col-6 col-lg-3">
+								<div class="stat-card">
+									<div class="stat-icon sand"><i class="ti ti-users"></i></div>
+									<div class="stat-info">
+										<div class="stat-label">Usuarios</div>
+										<div class="stat-value">3</div>
+										<div class="stat-change neutral">Activos</div>
+									</div>
+							</div>
+						</div>
+						<?php endif; ?>
+						
+						<div class="col-6 col-lg-3">
+							<div class="stat-card">
+								<div class="stat-icon gray"><i class="ti ti-bell"></i></div>
+								<div class="stat-info">
+									<div class="stat-label">Notificaciones</div>
+									<div class="stat-value" id="statNotifications">-</div>
+									<div class="stat-change" id="statNotificationsPending">Cargando...</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-6 col-lg-3">
+							<div class="stat-card">
+								<div class="stat-icon beige"><i class="ti ti-file-text"></i></div>
+								<div class="stat-info">
+									<div class="stat-label">Recetas</div>
+									<div class="stat-value" id="statPrescriptions">-</div>
+									<div class="stat-change" id="statPrescriptionsToday">Cargando...</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- /stat cards -->
+
+						<!-- Map + Chart Row -->
+						<div class="row g-3 mb-4">
+							<div class="col-lg-7">
+								<div class="card h-100">
+									<div class="card-header d-flex align-items-center justify-content-between">
+										<h3 class="mb-0" style="font-size:0.95rem;">
+											<i class="ti ti-map-pin me-1"></i>
+											<?= ($isFarmaceutico || $isFiltered) ? 'Ubicación de la farmacia' : 'Mapa de farmacias' ?>
+										</h3>
+										<?php if ($canViewAllPharmacies && !$isFiltered): ?>
+										<span class="badge badge-success" id="pharmacyCount">3 farmacias</span>
+										<?php endif; ?>
+									</div>
+									<div class="card-body p-0">
+										<div id="pharmacyMap" style="height: 350px; border-radius: 0 0 10px 10px;"></div>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-5">
+								<div class="card h-100">
+									<div class="card-header">
+										<h3 class="mb-0" style="font-size:0.95rem;">Notificaciones por tipo</h3>
+									</div>
+									<div class="card-body">
+										<div id="chartTypes" style="height: 300px;"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- /map + chart row -->
+
+						<!-- Chart Full + Quick Access -->
+						<div class="row g-3">
+							<div class="col-lg-8">
+								<div class="card">
+									<div class="card-header d-flex align-items-center justify-content-between">
+										<h3 class="mb-0" style="font-size:0.95rem;">Notificaciones por mes</h3>
+										<div id="yearSelectorContainer"></div>
+									</div>
+									<div class="card-body">
+										<div id="chartNotifications" style="height: 250px;"></div>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-4">
+								<div class="card mb-3">
+									<div class="card-header">
+										<h3 class="mb-0" style="font-size:0.95rem;">Sistema</h3>
+									</div>
+									<div class="card-body">
+										<table class="table table-sm mb-0">
+											<tbody>
+												<tr><td class="text-muted">Versión</td><td class="text-end fw-semibold">v1.0.0</td></tr>
+												<tr><td class="text-muted">Estado</td><td class="text-end"><span class="badge badge-success">Operativo</span></td></tr>
+												<tr><td class="text-muted">Rol</td><td class="text-end"><span class="badge badge-secondary"><?= htmlspecialchars($userRole) ?></span></td></tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+								<div class="card">
+									<div class="card-header d-flex align-items-center justify-content-between">
+										<h3 class="mb-0" style="font-size:0.95rem;">Accesos rápidos</h3>
+									</div>
+									<div class="card-body p-0">
+										<a href="profile.php" class="d-flex align-items-center gap-3 px-3 py-3 border-bottom" style="border-color:var(--beige)!important;">
+											<i class="ti ti-user" style="font-size:1.2rem;color:var(--primary);"></i>
+											<div>
+												<div class="fw-semibold" style="font-size:0.9rem;">Mi Perfil</div>
+												<div class="text-muted" style="font-size:0.78rem;">Información personal</div>
+											</div>
+										</a>
+										<?php if ($isAdmin): ?>
+										<a href="activity.php" class="d-flex align-items-center gap-3 px-3 py-3">
+											<i class="ti ti-activity" style="font-size:1.2rem;color:var(--primary);"></i>
+											<div>
+												<div class="fw-semibold" style="font-size:0.9rem;">Actividad</div>
+												<div class="text-muted" style="font-size:0.78rem;">Registro de actividad</div>
+											</div>
+										</a>
+										<?php endif; ?>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- /chart full + quick access -->
+
+					</div>
+				</div>
+				<!-- /page body -->
+
+				<?php include __DIR__ . '/../shared/footer.php'; ?>
+			</div>
+			<!-- /main content -->
+		</div>
+
+		<script>
+			window.FarmaConfig = {
+				apiBase: '<?= API_BASE_URL ?>',
+				token: '<?= $token ?>',
+				userRole: '<?= $userRole ?>',
+				isAdmin: <?= $isAdmin ? 'true' : 'false' ?>,
+				isDoctor: <?= $isDoctor ? 'true' : 'false' ?>,
+				isFarmaceutico: <?= $isFarmaceutico ? 'true' : 'false' ?>,
+				canViewAllPharmacies: <?= $canViewAllPharmacies ? 'true' : 'false' ?>,
+				selectedPharmacyId: <?= $selectedPharmacyId ? $selectedPharmacyId : 'null' ?>,
+				selectedPharmacyName: <?= $selectedPharmacyName ? "'" . addslashes($selectedPharmacyName) . "'" : 'null' ?>,
+				isFiltered: <?= $isFiltered ? 'true' : 'false' ?>
+			};
+		</script>
+		<?= AssetsManager::renderJS(['jquery', 'bootstrap', 'apexcharts', 'sweetalert2', 'select2', 'leaflet', 'app']) ?>
+		<script src="<?= AssetsManager::asset('js/index_page.js') ?>?v=<?= time() ?>"></script>
+
+	</body>
 </html>

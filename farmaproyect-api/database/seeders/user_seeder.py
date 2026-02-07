@@ -19,47 +19,125 @@ class UserSeeder(Seeder):
         farmaceutico_role = UserRole.objects.get(name='Farmacéutico')
         
         users_data = [
+            # === ADMINISTRADORES ===
             {
-                'email': 'admin_farmaproject@mailinator.com',
-                'password': 'FarmaAdmin2026!',
+                'email': 'manuelglezpersonal@gmail.com',
+                'password': 'Pantalla1*',
                 'role': admin_role,
                 'is_staff': True,
                 'is_superuser': True,
-                'first_name': 'Administrador',
-                'last_name': 'FarmaProject',
-                'phone': '+34 600 000 001',
-                'city': 'Madrid',
+                'first_name': 'Manuel',
+                'last_name': 'González',
+                'phone': '+34 600 100 001',
+                'city': 'Santa Cruz de Tenerife',
                 'country': 'España'
             },
             {
-                'email': 'medico_farmaproject@mailinator.com',
-                'password': 'FarmaMedico2026!',
+                'email': 'FarmaAdmin@mailinator.com',
+                'password': 'Pantalla1*',
+                'role': admin_role,
+                'is_staff': True,
+                'is_superuser': True,
+                'first_name': 'Carlos',
+                'last_name': 'Administrador',
+                'phone': '+34 600 100 002',
+                'city': 'Las Palmas de Gran Canaria',
+                'country': 'España'
+            },
+            # === MÉDICOS ===
+            {
+                'email': 'dr.rodriguez@farmaproject.es',
+                'password': 'Pantalla1*',
                 'role': medico_role,
                 'is_staff': False,
                 'is_superuser': False,
-                'first_name': 'Dr. Juan',
-                'last_name': 'Médico',
-                'phone': '+34 600 000 002',
-                'city': 'Barcelona',
+                'first_name': 'Antonio',
+                'last_name': 'Rodríguez García',
+                'phone': '+34 600 200 001',
+                'city': 'Santa Cruz de Tenerife',
                 'country': 'España'
             },
             {
-                'email': 'farmaceutico_farmaproject@mailinator.com',
-                'password': 'FarmaFarmaceutico2026!',
+                'email': 'dra.martinez@farmaproject.es',
+                'password': 'Pantalla1*',
+                'role': medico_role,
+                'is_staff': False,
+                'is_superuser': False,
+                'first_name': 'Laura',
+                'last_name': 'Martínez López',
+                'phone': '+34 600 200 002',
+                'city': 'La Laguna',
+                'country': 'España'
+            },
+            {
+                'email': 'dr.sanchez@farmaproject.es',
+                'password': 'Pantalla1*',
+                'role': medico_role,
+                'is_staff': False,
+                'is_superuser': False,
+                'first_name': 'Pedro',
+                'last_name': 'Sánchez Hernández',
+                'phone': '+34 600 200 003',
+                'city': 'Las Palmas de Gran Canaria',
+                'country': 'España'
+            },
+            # === FARMACÉUTICOS ===
+            {
+                'email': 'maria.farmacia@farmaproject.es',
+                'password': 'Pantalla1*',
                 'role': farmaceutico_role,
                 'is_staff': False,
                 'is_superuser': False,
                 'first_name': 'María',
-                'last_name': 'Farmacéutica',
-                'phone': '+34 600 000 003',
-                'city': 'Valencia',
-                'country': 'España'
+                'last_name': 'Pérez Alonso',
+                'phone': '+34 600 300 001',
+                'city': 'Santa Cruz de Tenerife',
+                'country': 'España',
+                'pharmacy_index': 0
+            },
+            {
+                'email': 'juan.farmacia@farmaproject.es',
+                'password': 'Pantalla1*',
+                'role': farmaceutico_role,
+                'is_staff': False,
+                'is_superuser': False,
+                'first_name': 'Juan',
+                'last_name': 'García Morales',
+                'phone': '+34 600 300 002',
+                'city': 'Santa Cruz de Tenerife',
+                'country': 'España',
+                'pharmacy_index': 1
+            },
+            {
+                'email': 'carmen.farmacia@farmaproject.es',
+                'password': 'Pantalla1*',
+                'role': farmaceutico_role,
+                'is_staff': False,
+                'is_superuser': False,
+                'first_name': 'Carmen',
+                'last_name': 'Díaz Rodríguez',
+                'phone': '+34 600 300 003',
+                'city': 'Las Palmas de Gran Canaria',
+                'country': 'España',
+                'pharmacy_index': 2
+            },
+            {
+                'email': 'david.farmacia@farmaproject.es',
+                'password': 'Pantalla1*',
+                'role': farmaceutico_role,
+                'is_staff': False,
+                'is_superuser': False,
+                'first_name': 'David',
+                'last_name': 'Suárez Medina',
+                'phone': '+34 600 300 004',
+                'city': 'La Orotava',
+                'country': 'España',
+                'pharmacy_index': 3
             },
         ]
         
         created_count = 0
         for user_data in users_data:
-            # Extract user data fields
             first_name = user_data.pop('first_name')
             last_name = user_data.pop('last_name')
             phone = user_data.pop('phone')
@@ -68,8 +146,8 @@ class UserSeeder(Seeder):
             password = user_data.pop('password')
             is_staff = user_data.pop('is_staff', False)
             is_superuser = user_data.pop('is_superuser', False)
+            user_data.pop('pharmacy_index', None)
             
-            # Create or get user
             user, created = User.objects.get_or_create(
                 email=user_data['email'],
                 defaults={
@@ -88,7 +166,6 @@ class UserSeeder(Seeder):
                     user.is_superuser = is_superuser
                 user.save()
             
-            # Create or update user data
             UserData.objects.update_or_create(
                 user=user,
                 defaults={

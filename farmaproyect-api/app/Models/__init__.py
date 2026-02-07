@@ -13,6 +13,7 @@ from .PharmacyUser import PharmacyUser
 from .NotificationType import NotificationType
 from .Notification import Notification
 from .NotificationMessage import NotificationMessage
+from .Prescription import Prescription
 
 __all__ = [
     'CommonStatus',
@@ -26,4 +27,5 @@ __all__ = [
     'NotificationType',
     'Notification',
     'NotificationMessage',
+    'Prescription',
 ]

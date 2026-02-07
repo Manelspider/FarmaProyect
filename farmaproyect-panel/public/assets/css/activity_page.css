@@ -1,0 +1,46 @@
+/* Activity Page - FarmaProject */
+
+#activityTable {
+    font-size: 0.875rem;
+}
+
+#activityTable thead th {
+    background: var(--beige);
+    border-bottom: 2px solid var(--primary);
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+#activityTable tbody tr:hover {
+    background: rgba(0, 95, 2, 0.03);
+}
+
+#activityTable .badge {
+    font-weight: 500;
+    font-size: 0.75rem;
+}
+
+.dataTables_wrapper .dataTables_filter input {
+    border-radius: 8px;
+    padding: 6px 12px;
+}
+
+.dataTables_wrapper .dataTables_length select {
+    border-radius: 8px;
+    padding: 4px 8px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: var(--primary) !important;
+    color: #fff !important;
+    border-color: var(--primary) !important;
+    border-radius: 6px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: var(--beige) !important;
+    border-color: var(--sand) !important;
+    color: var(--primary) !important;
+}

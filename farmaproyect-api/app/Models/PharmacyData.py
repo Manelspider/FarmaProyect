@@ -16,6 +16,7 @@ class PharmacyData(models.Model):
         related_name='data'
     )
     name = models.CharField(max_length=200)
+    logo = models.CharField(max_length=500, blank=True, null=True, help_text="URL del logo")
     address = models.TextField()
     city = models.CharField(max_length=100)
     state = models.CharField(max_length=100, blank=True, null=True)
@@ -24,6 +25,8 @@ class PharmacyData(models.Model):
     phone = models.CharField(max_length=20)
     email = models.EmailField(blank=True, null=True)
     license_number = models.CharField(max_length=100, unique=True, help_text="Número de licencia")
+    latitude = models.DecimalField(max_digits=10, decimal_places=7, blank=True, null=True)
+    longitude = models.DecimalField(max_digits=10, decimal_places=7, blank=True, null=True)
     status = models.ForeignKey(
         CommonStatus,
         on_delete=models.PROTECT,

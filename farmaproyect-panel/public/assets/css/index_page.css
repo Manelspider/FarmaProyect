@@ -1,8 +1,63 @@
-/**
- * Dashboard Page - Estilos específicos
- */
+/* Dashboard - page specific */
 
-.navbar-brand-image {
-    height: 32px;
-    width: auto;
+/* Map markers */
+.pharmacy-marker {
+    background: transparent;
+    border: none;
+}
+
+.marker-pin {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    background: var(--primary, #005F02);
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+}
+
+.marker-pin i {
+    transform: rotate(45deg);
+    color: #fff;
+    font-size: 18px;
+}
+
+.marker-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    transform: rotate(45deg);
+    background: #dc3545;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.pharmacy-popup {
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.pharmacy-popup strong {
+    color: var(--primary, #005F02);
+}
+
+/* Stat change neutral */
+.stat-change.neutral {
+    color: #666;
+}
+
+.stat-change.neutral i {
+    display: none;
 }

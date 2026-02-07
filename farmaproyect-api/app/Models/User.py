@@ -4,6 +4,7 @@ Usuario principal compatible con Django Admin
 """
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.utils import timezone
 from .CommonStatus import CommonStatus
 from .UserRole import UserRole
 
@@ -110,3 +111,8 @@ class User(AbstractBaseUser, PermissionsMixin):
             return self.data.first_name
         except Exception:
             return self.email.split('@')[0]
+
+    def update_last_login(self):
+        """Actualizar timestamp de último login"""
+        self.last_login = timezone.now()
+        self.save(update_fields=['last_login'])

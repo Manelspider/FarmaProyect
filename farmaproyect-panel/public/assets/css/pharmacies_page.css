@@ -1,0 +1,113 @@
+/**
+ * Pharmacies Page Styles - FarmaProject
+ */
+
+/* Map containers */
+.map-form-container {
+    height: 250px;
+    border-radius: 8px;
+    border: 1px solid var(--secondary);
+    overflow: hidden;
+}
+
+.map-show-container {
+    height: 280px;
+    border-radius: 8px;
+    border: 1px solid var(--secondary);
+    overflow: hidden;
+}
+
+/* Custom marker for show map */
+.pharmacy-marker {
+    background: transparent;
+    border: none;
+}
+
+.pharmacy-marker .marker-pin {
+    width: 40px;
+    height: 40px;
+    background: var(--primary);
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+}
+
+.pharmacy-marker .marker-pin i {
+    transform: rotate(45deg);
+    color: white;
+    font-size: 18px;
+}
+
+/* Modal improvements */
+#modalPharmacy .modal-header {
+    background-color: var(--primary) !important;
+}
+
+#modalShowPharmacy .modal-header {
+    background-color: var(--primary) !important;
+}
+
+#modalDeletePharmacy .modal-header {
+    background-color: #dc3545 !important;
+}
+
+/* Table action dropdown */
+.dropdown-item {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+.dropdown-item i {
+    font-size: 1rem;
+}
+
+.dropdown-item.text-danger:hover {
+    background-color: #fff5f5;
+}
+
+/* DataTable customization */
+.datatable-header {
+    padding: 1rem 0;
+}
+
+.datatable-footer {
+    padding: 1rem 0;
+    border-top: 1px solid var(--beige);
+}
+
+/* Form readonly fields */
+#pharmacy_lat,
+#pharmacy_lng {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+}
+
+/* Show modal table */
+#modalShowPharmacy .table td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--beige);
+}
+
+#modalShowPharmacy .table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Badge status */
+.badge.bg-success {
+    background-color: var(--primary) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .map-form-container,
+    .map-show-container {
+        height: 200px;
+    }
+
+    #modalShowPharmacy .row > div {
+        margin-bottom: 1rem;
+    }
+}

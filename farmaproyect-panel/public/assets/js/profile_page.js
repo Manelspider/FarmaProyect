@@ -1,9 +1,7 @@
 /**
  * Profile Page - JavaScript
- * Gestiona la lógica de la página de perfil
  */
 
-// Toggle password visibility
 function togglePassword(inputId) {
     const input = document.getElementById(inputId);
     const icon = event.currentTarget.querySelector('i');
@@ -19,42 +17,41 @@ function togglePassword(inputId) {
     }
 }
 
-// Handle password change form
 document.getElementById('changePasswordForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
     const currentPassword = document.getElementById('currentPassword').value;
     const newPassword = document.getElementById('newPassword').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
-    const alertDiv = document.getElementById('passwordAlert');
     const submitBtn = document.getElementById('changePasswordBtn');
 
-    // Clear previous alerts
-    alertDiv.innerHTML = '';
-
-    // Validate passwords match
     if (newPassword !== confirmPassword) {
-        alertDiv.innerHTML = `
-            <div class="alert alert-danger alert-dismissible" role="alert">
-                <div class="d-flex">
-                    <div><i class="ti ti-alert-circle me-2"></i></div>
-                    <div>Las contraseñas nuevas no coinciden</div>
-                </div>
-                <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
-            </div>`;
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Las contraseñas nuevas no coinciden',
+            confirmButtonColor: '#005F02'
+        });
         return;
     }
 
-    // Disable button
+    if (newPassword.length < 8) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Contraseña débil',
+            text: 'La contraseña debe tener al menos 8 caracteres',
+            confirmButtonColor: '#005F02'
+        });
+        return;
+    }
+
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Cambiando...';
 
     try {
         const response = await fetch('change_password_api.php', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 current_password: currentPassword,
                 new_password: newPassword
@@ -64,43 +61,31 @@ document.getElementById('changePasswordForm').addEventListener('submit', async f
         const result = await response.json();
 
         if (result.success) {
-            alertDiv.innerHTML = `
-                <div class="alert alert-success alert-dismissible" role="alert">
-                    <div class="d-flex">
-                        <div><i class="ti ti-check me-2"></i></div>
-                        <div>${result.message || 'Contraseña cambiada exitosamente'}</div>
-                    </div>
-                    <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
-                </div>`;
-            
-            // Reset form
-            this.reset();
-            
-            // Close modal after 2 seconds
-            setTimeout(() => {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                text: result.message || 'Contraseña cambiada exitosamente',
+                confirmButtonColor: '#005F02'
+            }).then(() => {
                 bootstrap.Modal.getInstance(document.getElementById('changePasswordModal')).hide();
-            }, 2000);
+                this.reset();
+            });
         } else {
-            alertDiv.innerHTML = `
-                <div class="alert alert-danger alert-dismissible" role="alert">
-                    <div class="d-flex">
-                        <div><i class="ti ti-alert-circle me-2"></i></div>
-                        <div>${result.message || 'Error al cambiar la contraseña'}</div>
-                    </div>
-                    <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
-                </div>`;
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: result.message || 'Error al cambiar la contraseña',
+                confirmButtonColor: '#005F02'
+            });
         }
     } catch (error) {
-        alertDiv.innerHTML = `
-            <div class="alert alert-danger alert-dismissible" role="alert">
-                <div class="d-flex">
-                    <div><i class="ti ti-alert-circle me-2"></i></div>
-                    <div>Error de conexión. Intente nuevamente.</div>
-                </div>
-                <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
-            </div>`;
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de conexión',
+            text: 'No se pudo conectar con el servidor',
+            confirmButtonColor: '#005F02'
+        });
     } finally {
-        // Re-enable button
         submitBtn.disabled = false;
         submitBtn.innerHTML = '<i class="ti ti-check me-2"></i>Cambiar Contraseña';
     }

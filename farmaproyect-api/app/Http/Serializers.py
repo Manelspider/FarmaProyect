@@ -72,6 +72,21 @@ class UserSerializer(serializers.ModelSerializer):
         return instance
 
 
+class UserListSerializer(serializers.ModelSerializer):
+    """Serializer ligero para listados"""
+    first_name = serializers.CharField(source='data.first_name', read_only=True)
+    last_name = serializers.CharField(source='data.last_name', read_only=True)
+    full_name = serializers.CharField(source='data.full_name', read_only=True)
+    phone = serializers.CharField(source='data.phone', read_only=True)
+    city = serializers.CharField(source='data.city', read_only=True)
+    role_name = serializers.CharField(source='role.name', read_only=True)
+    role_id = serializers.IntegerField(source='role.id', read_only=True)
+
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'first_name', 'last_name', 'full_name', 'phone', 'city', 'role_id', 'role_name', 'last_login']
+
+
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
@@ -93,10 +108,28 @@ class PharmacyDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = PharmacyData
         fields = [
-            'id', 'name', 'address', 'city', 'state', 'postal_code',
+            'id', 'name', 'logo', 'address', 'city', 'state', 'postal_code',
             'country', 'phone', 'email', 'license_number',
+            'latitude', 'longitude',
             'status', 'status_name', 'created_at', 'updated_at'
         ]
+
+
+class PharmacyListSerializer(serializers.ModelSerializer):
+    """Serializer ligero para listados/select"""
+    name = serializers.CharField(source='data.name', read_only=True)
+    address = serializers.CharField(source='data.address', read_only=True)
+    city = serializers.CharField(source='data.city', read_only=True)
+    postal_code = serializers.CharField(source='data.postal_code', read_only=True)
+    phone = serializers.CharField(source='data.phone', read_only=True)
+    email = serializers.CharField(source='data.email', read_only=True)
+    logo = serializers.CharField(source='data.logo', read_only=True)
+    latitude = serializers.DecimalField(source='data.latitude', max_digits=10, decimal_places=7, read_only=True)
+    longitude = serializers.DecimalField(source='data.longitude', max_digits=10, decimal_places=7, read_only=True)
+
+    class Meta:
+        model = Pharmacy
+        fields = ['id', 'code', 'name', 'address', 'city', 'postal_code', 'phone', 'email', 'logo', 'latitude', 'longitude']
 
 
 class PharmacySerializer(serializers.ModelSerializer):

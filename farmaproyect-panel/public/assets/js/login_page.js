@@ -1,9 +1,7 @@
 /**
  * Login Page - JavaScript
- * Gestiona la lógica de la página de login
  */
 
-// Load remembered email
 document.addEventListener('DOMContentLoaded', function() {
     const rememberedEmail = localStorage.getItem('farma_email');
     if (rememberedEmail) {
@@ -12,7 +10,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Toggle password visibility
 function togglePasswordVisibility() {
     const passwordInput = document.getElementById('password');
     const toggleIcon = document.getElementById('toggleIcon');
@@ -28,38 +25,6 @@ function togglePasswordVisibility() {
     }
 }
 
-// Show alert
-function showAlert(message, type = 'danger') {
-    const alertContainer = document.getElementById('alertContainer');
-    const iconMap = {
-        success: 'ti-check',
-        danger: 'ti-alert-circle',
-        info: 'ti-info-circle'
-    };
-
-    alertContainer.innerHTML = `
-        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
-            <div class="d-flex">
-                <div>
-                    <i class="ti ${iconMap[type]} me-2"></i>
-                </div>
-                <div>${message}</div>
-            </div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    `;
-
-    // Auto-hide after 5 seconds
-    setTimeout(() => {
-        const alert = alertContainer.querySelector('.alert');
-        if (alert) {
-            const bsAlert = new bootstrap.Alert(alert);
-            bsAlert.close();
-        }
-    }, 5000);
-}
-
-// Set loading state
 function setLoading(loading) {
     const loginBtn = document.getElementById('loginBtn');
     const form = document.getElementById('loginForm');
@@ -75,28 +40,35 @@ function setLoading(loading) {
     }
 }
 
-// Handle form submission
 document.getElementById('loginForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
-    // Clear previous validation
     this.classList.remove('was-validated');
     
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
     const rememberMe = document.getElementById('rememberMe').checked;
 
-    // Validate
     if (!email || !password) {
         this.classList.add('was-validated');
+        Swal.fire({
+            icon: 'warning',
+            title: 'Campos requeridos',
+            text: 'Por favor complete todos los campos',
+            confirmButtonColor: '#005F02'
+        });
         return;
     }
 
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
         document.getElementById('email').classList.add('is-invalid');
-        showAlert('Por favor ingrese un correo electrónico válido', 'danger');
+        Swal.fire({
+            icon: 'error',
+            title: 'Email inválido',
+            text: 'Por favor ingrese un correo electrónico válido',
+            confirmButtonColor: '#005F02'
+        });
         return;
     }
 
@@ -105,40 +77,50 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     try {
         const response = await fetch('login_api.php', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
         });
 
         const result = await response.json();
 
         if (result.success) {
-            // Remember email if checkbox is checked
             if (rememberMe) {
                 localStorage.setItem('farma_email', email);
             } else {
                 localStorage.removeItem('farma_email');
             }
 
-            showAlert('¡Inicio de sesión exitoso! Redirigiendo...', 'success');
-            
-            // Redirect to profile
-            setTimeout(() => {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Bienvenido!',
+                text: 'Inicio de sesión exitoso',
+                showConfirmButton: false,
+                timer: 1500,
+                timerProgressBar: true
+            }).then(() => {
                 window.location.href = 'index.php';
-            }, 1000);
+            });
         } else {
-            showAlert(result.message || 'Credenciales incorrectas. Verifique su email y contraseña.', 'danger');
+            Swal.fire({
+                icon: 'error',
+                title: 'Error de autenticación',
+                text: result.message || 'Credenciales incorrectas',
+                confirmButtonColor: '#005F02'
+            });
             setLoading(false);
         }
     } catch (error) {
         console.error('Error:', error);
-        showAlert('Error de conexión. Por favor intente nuevamente.', 'danger');
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de conexión',
+            text: 'No se pudo conectar con el servidor. Intente nuevamente.',
+            confirmButtonColor: '#005F02'
+        });
         setLoading(false);
     }
 });
 
-// Clear invalid state on input
 document.querySelectorAll('.form-control').forEach(input => {
     input.addEventListener('input', function() {
         this.classList.remove('is-invalid');

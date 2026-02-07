@@ -7,6 +7,8 @@ from database.seeders.common_status_seeder import CommonStatusSeeder
 from database.seeders.user_role_seeder import UserRoleSeeder
 from database.seeders.user_seeder import UserSeeder
 from database.seeders.notification_type_seeder import NotificationTypeSeeder
+from database.seeders.pharmacy_seeder import PharmacySeeder
+from database.seeders.notification_seeder import NotificationSeeder
 
 
 class DatabaseSeeder(Seeder):
@@ -23,6 +25,8 @@ class DatabaseSeeder(Seeder):
             UserRoleSeeder,
             UserSeeder,
             NotificationTypeSeeder,
+            PharmacySeeder,
+            NotificationSeeder,
         ])
         
         print("=" * 50)
